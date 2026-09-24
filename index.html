@@ -1,19 +1,33 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+  <base target="_top">
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BigA Group | Quotation System</title>
-  <link rel="stylesheet" href="style.css">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+
+  <title>BigA Group | Quotations</title>
+
+  <?!= include("CSS"); ?>
 </head>
+
 <body>
 
 <div class="toolbar">
   <h2>BigA Group | Quotations</h2>
+
   <div>
-    <button onclick="addRow()">+ Add Product</button>
-    <button onclick="window.print()">Print / Save PDF</button>
+    <button onclick="addRow()">
+      + Add Product
+    </button>
+
+    <button onclick="window.print()">
+      Print / Save PDF
+    </button>
   </div>
 </div>
 
@@ -33,37 +47,93 @@
     </div>
   </header>
 
-  <h2 class="document-title">QUOTATION</h2>
+  <h2 class="document-title">
+    QUOTATION
+  </h2>
 
   <section class="details">
+
     <div>
+
+      <label>Select Customer</label>
+
+      <select id="customerSelect"
+              onchange="selectCustomer()">
+        <option value="">
+          Loading customers...
+        </option>
+      </select>
+
+      <button class="small-button no-print"
+              onclick="toggleCustomerForm()">
+        + New Customer
+      </button>
+
+      <div id="newCustomerForm"
+           class="customer-form no-print"
+           hidden>
+
+        <h3>Add New Customer</h3>
+
+        <label>Company</label>
+        <input id="newCompany">
+
+        <label>Address</label>
+        <textarea id="newAddress"></textarea>
+
+        <label>Email</label>
+        <input id="newEmail" type="email">
+
+        <label>Phone</label>
+        <input id="newPhone">
+
+        <button onclick="saveCustomer()">
+          Save Customer
+        </button>
+
+        <p id="customerMessage"></p>
+
+      </div>
+
       <label>Customer Name</label>
-      <input id="customer" value="Cristal Hotel">
+      <input id="customer">
 
       <label>Customer Address</label>
       <textarea id="address" rows="2"></textarea>
 
       <label>Customer Email</label>
       <input id="email" type="email">
+
+      <label>Customer Phone</label>
+      <input id="phone">
+
     </div>
 
     <div>
+
       <label>Quotation Number</label>
-      <input id="quoteNumber" value="BQ-2026-0001">
+      <input id="quoteNumber"
+             value="BQ-2026-0001">
 
       <label>Date</label>
       <input id="quoteDate" type="date">
 
       <label>Currency</label>
-      <select id="currency" onchange="calculateTotal()">
+      <select id="currency"
+              onchange="calculateTotal()">
+
         <option value="USD">USD ($)</option>
         <option value="EUR">EUR (€)</option>
         <option value="TRY">TRY (₺)</option>
+
       </select>
+
     </div>
+
   </section>
 
   <table id="products">
+
     <thead>
       <tr>
         <th>No.</th>
@@ -77,6 +147,7 @@
     </thead>
 
     <tbody id="productRows"></tbody>
+
   </table>
 
   <div class="total-box">
@@ -85,30 +156,51 @@
   </div>
 
   <section class="terms">
+
     <h3>Terms & Conditions</h3>
 
-    <p>The price offer is based on the specified quantity
-    and product specifications. Please contact us if
-    there are any changes to these details.</p>
+    <p>
+      The price offer is based on the specified
+      quantity and product specifications.
+      Please contact us if there are any
+      changes to these details.
+    </p>
 
-    <p>There may be a variance of up to ±5% in the
-    product quantity and quality.</p>
+    <p>
+      There may be a variance of up to ±5%
+      in the product quantity and quality.
+    </p>
 
-    <p>Delivery of the products belongs to BigA Soft Company.</p>
+    <p>
+      Delivery of the products belongs
+      to BigA Soft Company.
+    </p>
 
-    <p>Sold goods are non-refundable. However, if a
-    mistake is identified, the receiving company will
-    be compensated after the necessary investigations
-    are completed.</p>
+    <p>
+      Sold goods are non-refundable.
+      However, if a mistake is identified,
+      the receiving company will be
+      compensated after the necessary
+      investigations are completed.
+    </p>
 
-    <p>The delivery period is 3–4 weeks from the date
-    of approval for graphics and film work.</p>
+    <p>
+      The delivery period is 3–4 weeks
+      from the date of approval for
+      graphics and film work.
+    </p>
 
-    <p>Payment method: 50% advance payment and
-    the remaining part at work delivery.</p>
+    <p>
+      Payment method: 50% advance payment
+      and the remaining part at work delivery.
+    </p>
 
-    <p>By placing an order, your company agrees
-    to the general conditions stated above.</p>
+    <p>
+      By placing an order, your company
+      agrees to the general conditions
+      stated above.
+    </p>
+
   </section>
 
   <footer>
@@ -118,6 +210,7 @@
 
 </main>
 
-<script src="script.js"></script>
+<?!= include("JS"); ?>
+
 </body>
 </html>
