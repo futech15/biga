@@ -1,123 +1,75 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+
   <title>BigA Group | Quotation System</title>
-  <link rel="stylesheet" href="style.css">
+
+  <meta http-equiv="refresh"
+        content="0;url=https://script.google.com/macros/s/AKfycbz1_mTRognoC0yTc3ZzkYB9r-YiDq6qkSg1QoUou5BJJcbXnuZKoyabneY11pEPhIkcUA/exec">
+
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f2f4f7;
+      font-family: Arial, sans-serif;
+      color: #172c46;
+      text-align: center;
+    }
+
+    .container {
+      padding: 40px;
+    }
+
+    h1 {
+      font-size: 30px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #666;
+      margin-bottom: 25px;
+    }
+
+    a {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #172c46;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+    }
+  </style>
+
 </head>
+
 <body>
 
-<div class="toolbar">
-  <h2>BigA Group | Quotations</h2>
-  <div>
-    <button onclick="addRow()">+ Add Product</button>
-    <button onclick="window.print()">Print / Save PDF</button>
-  </div>
-</div>
+  <div class="container">
 
-<main class="quote">
+    <h1>BigA Group</h1>
 
-  <header>
-    <div class="company">
-      <h1>BigA Group</h1>
-      <p>Printing & Promotional Products</p>
-    </div>
+    <p>Opening your quotation system...</p>
 
-    <div class="company-info">
-      <strong>BigA Group</strong><br>
-      Sultanbeyli, 34920 Istanbul, Turkey<br>
-      Phone: +90 541 378 4804<br>
-      Email: info@bigasoft.org
-    </div>
-  </header>
+    <a href="https://script.google.com/macros/s/AKfycbz1_mTRognoC0yTc3ZzkYB9r-YiDq6qkSg1QoUou5BJJcbXnuZKoyabneY11pEPhIkcUA/exec">
+      Open Quotation System
+    </a>
 
-  <h2 class="document-title">QUOTATION</h2>
-
-  <section class="details">
-    <div>
-      <label>Customer Name</label>
-      <input id="customer" value="Cristal Hotel">
-
-      <label>Customer Address</label>
-      <textarea id="address" rows="2"></textarea>
-
-      <label>Customer Email</label>
-      <input id="email" type="email">
-    </div>
-
-    <div>
-      <label>Quotation Number</label>
-      <input id="quoteNumber" value="BQ-2026-0001">
-
-      <label>Date</label>
-      <input id="quoteDate" type="date">
-
-      <label>Currency</label>
-      <select id="currency" onchange="calculateTotal()">
-        <option value="USD">USD ($)</option>
-        <option value="EUR">EUR (€)</option>
-        <option value="TRY">TRY (₺)</option>
-      </select>
-    </div>
-  </section>
-
-  <table id="products">
-    <thead>
-      <tr>
-        <th>No.</th>
-        <th>Item</th>
-        <th>Note</th>
-        <th>Quantity</th>
-        <th>Unit Price</th>
-        <th>Total</th>
-        <th class="no-print">Action</th>
-      </tr>
-    </thead>
-
-    <tbody id="productRows"></tbody>
-  </table>
-
-  <div class="total-box">
-    <strong>GRAND TOTAL:</strong>
-    <span id="grandTotal">$0.00</span>
   </div>
 
-  <section class="terms">
-    <h3>Terms & Conditions</h3>
+  <script>
+    window.location.replace(
+      "https://script.google.com/macros/s/AKfycbz1_mTRognoC0yTc3ZzkYB9r-YiDq6qkSg1QoUou5BJJcbXnuZKoyabneY11pEPhIkcUA/exec"
+    );
+  </script>
 
-    <p>The price offer is based on the specified quantity
-    and product specifications. Please contact us if
-    there are any changes to these details.</p>
-
-    <p>There may be a variance of up to ±5% in the
-    product quantity and quality.</p>
-
-    <p>Delivery of the products belongs to BigA Soft Company.</p>
-
-    <p>Sold goods are non-refundable. However, if a
-    mistake is identified, the receiving company will
-    be compensated after the necessary investigations
-    are completed.</p>
-
-    <p>The delivery period is 3–4 weeks from the date
-    of approval for graphics and film work.</p>
-
-    <p>Payment method: 50% advance payment and
-    the remaining part at work delivery.</p>
-
-    <p>By placing an order, your company agrees
-    to the general conditions stated above.</p>
-  </section>
-
-  <footer>
-    <span>www.bigasoft.org</span>
-    <span>info@bigasoft.org</span>
-  </footer>
-
-</main>
-
-<script src="script.js"></script>
 </body>
 </html>
