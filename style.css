@@ -227,3 +227,33 @@ footer {
     break-inside: avoid;
   }
 }
+
+
+.customer-form {
+  margin: 15px 0;
+  padding: 15px;
+  background: #f3f6fa;
+  border: 1px solid #d4dce5;
+  border-radius: 6px;
+}
+
+.customer-form[hidden] {
+  display: none;
+}
+
+.small-button {
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+#customerMessage {
+  font-size: 12px;
+}
+
+@media print {
+  #customerSelect,
+  .small-button,
+  .customer-form {
+    display: none !important;
+  }
+}
