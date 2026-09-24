@@ -1,75 +1,244 @@
-
+```html
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>BigA Group | Quotation System</title>
 
-  <meta http-equiv="refresh"
-        content="0;url=https://script.google.com/macros/s/AKfycbz1_mTRognoC0yTc3ZzkYB9r-YiDq6qkSg1QoUou5BJJcbXnuZKoyabneY11pEPhIkcUA/exec">
-
-  <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #f2f4f7;
-      font-family: Arial, sans-serif;
-      color: #172c46;
-      text-align: center;
-    }
-
-    .container {
-      padding: 40px;
-    }
-
-    h1 {
-      font-size: 30px;
-      margin-bottom: 10px;
-    }
-
-    p {
-      color: #666;
-      margin-bottom: 25px;
-    }
-
-    a {
-      display: inline-block;
-      padding: 12px 24px;
-      background: #172c46;
-      color: white;
-      text-decoration: none;
-      border-radius: 6px;
-    }
-  </style>
-
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <div class="container">
+  <!-- TOP TOOLBAR -->
+  <div class="toolbar">
+    <h2>BigA Group | Quotation System</h2>
 
-    <h1>BigA Group</h1>
+    <div>
+      <button type="button" onclick="addRow()">
+        + Add Product
+      </button>
 
-    <p>Opening your quotation system...</p>
-
-    <a href="https://script.google.com/macros/s/AKfycbz1_mTRognoC0yTc3ZzkYB9r-YiDq6qkSg1QoUou5BJJcbXnuZKoyabneY11pEPhIkcUA/exec">
-      Open Quotation System
-    </a>
-
+      <button type="button" onclick="window.print()">
+        Print / Save PDF
+      </button>
+    </div>
   </div>
 
-  <script>
-    window.location.replace(
-      "https://script.google.com/macros/s/AKfycbz1_mTRognoC0yTc3ZzkYB9r-YiDq6qkSg1QoUou5BJJcbXnuZKoyabneY11pEPhIkcUA/exec"
-    );
-  </script>
+
+  <!-- QUOTATION -->
+  <main class="quote">
+
+    <!-- COMPANY HEADER -->
+    <header>
+
+      <div class="company">
+        <h1>BigA Group</h1>
+
+        <p>We Print to Brand Your Business</p>
+
+        <p>
+          Commercial Printing | Promotional Products | Direct Mail
+        </p>
+      </div>
+
+      <div class="company-info">
+        <strong>QUOTATION</strong><br>
+        BigA Group<br>
+        Cleveland, Ohio<br>
+        info@bigagroup.com
+      </div>
+
+    </header>
+
+
+    <!-- DOCUMENT TITLE -->
+    <div class="document-title">
+      <h2>Quotation</h2>
+    </div>
+
+
+    <!-- QUOTATION DETAILS -->
+    <section class="details">
+
+      <div>
+
+        <label for="customerName">
+          Customer Name
+        </label>
+
+        <input
+          type="text"
+          id="customerName"
+          placeholder="Customer name"
+        >
+
+
+        <label for="customerCompany">
+          Company
+        </label>
+
+        <input
+          type="text"
+          id="customerCompany"
+          placeholder="Company name"
+        >
+
+
+        <label for="customerEmail">
+          Email
+        </label>
+
+        <input
+          type="email"
+          id="customerEmail"
+          placeholder="Email address"
+        >
+
+
+        <label for="customerPhone">
+          Phone
+        </label>
+
+        <input
+          type="text"
+          id="customerPhone"
+          placeholder="Phone number"
+        >
+
+      </div>
+
+
+      <div>
+
+        <label for="quoteNumber">
+          Quote #
+        </label>
+
+        <input
+          type="text"
+          id="quoteNumber"
+          placeholder="Quote number"
+        >
+
+
+        <label for="quoteDate">
+          Quote Date
+        </label>
+
+        <input
+          type="date"
+          id="quoteDate"
+        >
+
+
+        <label for="currency">
+          Currency
+        </label>
+
+        <select id="currency" onchange="calculateTotal()">
+          <option value="USD">USD ($)</option>
+          <option value="EUR">EUR (€)</option>
+          <option value="GBP">GBP (£)</option>
+          <option value="CAD">CAD ($)</option>
+        </select>
+
+
+        <label for="validUntil">
+          Valid Until
+        </label>
+
+        <input
+          type="date"
+          id="validUntil"
+        >
+
+      </div>
+
+    </section>
+
+
+    <!-- PRODUCTS -->
+    <section>
+
+      <table>
+
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th style="width: 20%;">Product</th>
+            <th>Description</th>
+            <th style="width: 10%;">Qty</th>
+            <th style="width: 15%;">Unit Price</th>
+            <th style="width: 15%;">Total</th>
+            <th class="no-print" style="width: 10%;">Action</th>
+          </tr>
+        </thead>
+
+        <tbody id="productRows">
+        </tbody>
+
+      </table>
+
+    </section>
+
+
+    <!-- TOTAL -->
+    <div class="total-box">
+
+      <strong>Grand Total:</strong>
+
+      <span id="grandTotal">
+        $0.00
+      </span>
+
+    </div>
+
+
+    <!-- TERMS -->
+    <section class="terms">
+
+      <h3>Terms & Conditions</h3>
+
+      <p>
+        Prices are based on the quantities and specifications
+        listed above.
+      </p>
+
+      <p>
+        Any changes to quantity, artwork, specifications, or
+        shipping may affect the final price.
+      </p>
+
+      <p>
+        Quote is valid for 30 days unless otherwise stated.
+      </p>
+
+      <p>
+        Payment terms will be provided with the final order.
+      </p>
+
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer>
+
+      <span>BigA Group</span>
+
+      <span>Thank you for your business.</span>
+
+    </footer>
+
+  </main>
+
+
+  <!-- JAVASCRIPT -->
+  <script src="script.js"></script>
 
 </body>
 </html>
+```
