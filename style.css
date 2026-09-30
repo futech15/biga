@@ -219,6 +219,14 @@ footer {
     resize: none;
   }
 
+  .editable-term input {
+    width: 90px;
+    border: none;
+    padding: 0;
+    background: transparent;
+    appearance: none;
+  }
+
   tr {
     break-inside: avoid;
   }
@@ -227,6 +235,7 @@ footer {
     break-inside: avoid;
   }
 }
+
 .company-logo {
   display: block !important;
   width: 140px !important;
@@ -244,14 +253,4 @@ footer {
   border: 1px solid #ccc;
   font-size: 12px;
   background: white;
-}
-
-@media print {
-  .editable-term input {
-    border: none;
-    width: 90px;
-    padding: 0;
-    background: transparent;
-    appearance: none;
-  }
 }
