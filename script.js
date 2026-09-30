@@ -5,60 +5,16 @@
  * ==========================================
  */
 
-
-/*
- * GOOGLE APPS SCRIPT WEB APP URL
- */
 const GOOGLE_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbz1_mTRognoC0yTc3ZzkYB9r-YiDq6qkSg1QoUou5BJJcbXnuZKoyabneY11pEPhIkcUA/exec";
-
-
-/*
- * PRODUCT TABLE
- */
-const rows =
-  document.getElementById("productRows");
-
-
-/*
- * QUOTATION DATE
- */
-const quoteDate =
-  document.getElementById("quoteDate");
-
-if (quoteDate) {
-
-  const today =
-    new Date();
-
-  const year =
-    today.getFullYear();
-
-  const month =
-    String(today.getMonth() + 1)
-      .padStart(2, "0");
-
-  const day =
-    String(today.getDate())
-      .padStart(2, "0");
-
-  quoteDate.value =
-    `${year}-${month}-${day}`;
-}
 
 
 /*
  * ==========================================
  * GOOGLE APPS SCRIPT JSONP
  * ==========================================
- *
- * GitHub Pages cannot directly use
- * google.script.run.
- *
- * JSONP allows this GitHub page to request
- * customer information and quote numbers
- * from Google Apps Script.
  */
+
 function googleJSONP(action) {
 
   return new Promise((resolve, reject) => {
@@ -67,17 +23,22 @@ function googleJSONP(action) {
       "googleCallback_" +
       Date.now() +
       "_" +
-      Math.floor(
-        Math.random() * 10000
-      );
+      Math.floor(Math.random() * 100000);
 
 
     const script =
       document.createElement("script");
 
 
+    let finished = false;
+
+
     const timeout =
       setTimeout(() => {
+
+        if (finished) return;
+
+        finished = true;
 
         cleanup();
 
@@ -94,7 +55,11 @@ function googleJSONP(action) {
 
       clearTimeout(timeout);
 
-      delete window[callbackName];
+      try {
+        delete window[callbackName];
+      } catch (e) {
+        window[callbackName] = undefined;
+      }
 
       if (script.parentNode) {
         script.parentNode.removeChild(script);
@@ -105,6 +70,10 @@ function googleJSONP(action) {
     window[callbackName] =
       function(data) {
 
+        if (finished) return;
+
+        finished = true;
+
         cleanup();
 
         resolve(data);
@@ -114,11 +83,15 @@ function googleJSONP(action) {
     script.onerror =
       function() {
 
+        if (finished) return;
+
+        finished = true;
+
         cleanup();
 
         reject(
           new Error(
-            "Unable to connect to Google Apps Script."
+            "Could not connect to Google Apps Script."
           )
         );
       };
@@ -129,7 +102,9 @@ function googleJSONP(action) {
       "?action=" +
       encodeURIComponent(action) +
       "&callback=" +
-      encodeURIComponent(callbackName);
+      encodeURIComponent(callbackName) +
+      "&t=" +
+      Date.now();
 
 
     document.body.appendChild(script);
@@ -142,22 +117,22 @@ function googleJSONP(action) {
  * LOAD CUSTOMERS
  * ==========================================
  */
+
 async function loadCustomers() {
 
   const select =
-    document.getElementById(
-      "customerName"
-    );
+    document.getElementById("customerName");
 
 
   if (!select) {
+    console.error(
+      "customerName element was not found."
+    );
+
     return;
   }
 
 
-  /*
-   * Show loading status.
-   */
   select.innerHTML =
     '<option value="">Loading customers...</option>';
 
@@ -165,51 +140,48 @@ async function loadCustomers() {
   try {
 
     const customers =
-      await googleJSONP(
-        "customers"
+      await googleJSONP("customers");
+
+
+    console.log(
+      "Customers received:",
+      customers
+    );
+
+
+    if (!Array.isArray(customers)) {
+
+      throw new Error(
+        "Customer data is not an array."
       );
+    }
 
 
-    /*
-     * Clear dropdown.
-     */
     select.innerHTML =
       '<option value="">Select customer</option>';
 
 
-    /*
-     * Add customers from Google Sheet.
-     */
     customers.forEach(customer => {
 
       const option =
         document.createElement("option");
 
 
-      /*
-       * Customer ID is kept as
-       * the option value.
-       */
       option.value =
-        customer.id;
+        customer.id || "";
 
 
-      /*
-       * Company name shown to user.
-       */
       option.textContent =
-        customer.company;
+        customer.company || "Unnamed customer";
 
 
-      /*
-       * Store customer information
-       * inside the option.
-       */
       option.dataset.address =
         customer.address || "";
 
+
       option.dataset.email =
         customer.email || "";
+
 
       option.dataset.phone =
         customer.phone || "";
@@ -219,25 +191,37 @@ async function loadCustomers() {
     });
 
 
+    /*
+     * If there are no customers,
+     * show a useful message.
+     */
+    if (customers.length === 0) {
+
+      select.innerHTML =
+        '<option value="">No customers found</option>';
+    }
+
+
   } catch (error) {
 
     console.error(
-      "Customer loading error:",
+      "Customer loading failed:",
       error
     );
 
 
     select.innerHTML =
-      '<option value="">Unable to load customers</option>';
+      '<option value="">Customer list unavailable</option>';
   }
 }
 
 
 /*
  * ==========================================
- * CUSTOMER SELECTION
+ * CUSTOMER SELECTED
  * ==========================================
  */
+
 function customerSelected() {
 
   const select =
@@ -246,9 +230,7 @@ function customerSelected() {
     );
 
 
-  if (!select) {
-    return;
-  }
+  if (!select) return;
 
 
   const option =
@@ -257,53 +239,38 @@ function customerSelected() {
     ];
 
 
-  /*
-   * Nothing selected.
-   */
+  const company =
+    document.getElementById(
+      "customerCompany"
+    );
+
+
+  const email =
+    document.getElementById(
+      "customerEmail"
+    );
+
+
+  const phone =
+    document.getElementById(
+      "customerPhone"
+    );
+
+
   if (
     !option ||
     !option.value
   ) {
 
-    const company =
-      document.getElementById(
-        "customerCompany"
-      );
+    if (company) company.value = "";
 
-    const email =
-      document.getElementById(
-        "customerEmail"
-      );
+    if (email) email.value = "";
 
-    const phone =
-      document.getElementById(
-        "customerPhone"
-      );
-
-
-    if (company) {
-      company.value = "";
-    }
-
-    if (email) {
-      email.value = "";
-    }
-
-    if (phone) {
-      phone.value = "";
-    }
+    if (phone) phone.value = "";
 
     return;
   }
 
-
-  /*
-   * Fill company.
-   */
-  const company =
-    document.getElementById(
-      "customerCompany"
-    );
 
   if (company) {
 
@@ -312,28 +279,12 @@ function customerSelected() {
   }
 
 
-  /*
-   * Fill email.
-   */
-  const email =
-    document.getElementById(
-      "customerEmail"
-    );
-
   if (email) {
 
     email.value =
       option.dataset.email || "";
   }
 
-
-  /*
-   * Fill phone.
-   */
-  const phone =
-    document.getElementById(
-      "customerPhone"
-    );
 
   if (phone) {
 
@@ -345,9 +296,10 @@ function customerSelected() {
 
 /*
  * ==========================================
- * GET NEXT QUOTE NUMBER
+ * GENERATE QUOTE NUMBER
  * ==========================================
  */
+
 async function loadQuoteNumber() {
 
   const quoteNumber =
@@ -356,14 +308,9 @@ async function loadQuoteNumber() {
     );
 
 
-  if (!quoteNumber) {
-    return;
-  }
+  if (!quoteNumber) return;
 
 
-  /*
-   * Show temporary status.
-   */
   quoteNumber.value =
     "Generating...";
 
@@ -376,6 +323,12 @@ async function loadQuoteNumber() {
       );
 
 
+    console.log(
+      "Quote number received:",
+      result
+    );
+
+
     if (
       result &&
       result.quoteNumber
@@ -386,21 +339,22 @@ async function loadQuoteNumber() {
 
     } else {
 
-      quoteNumber.value =
-        "ERROR";
+      throw new Error(
+        "No quote number returned."
+      );
     }
 
 
   } catch (error) {
 
     console.error(
-      "Quote number error:",
+      "Quote number failed:",
       error
     );
 
 
     quoteNumber.value =
-      "ERROR";
+      "Not available";
   }
 }
 
@@ -410,12 +364,29 @@ async function loadQuoteNumber() {
  * ADD PRODUCT ROW
  * ==========================================
  */
+
 function addRow(
   item = "",
   note = "",
   qty = 1,
   price = 0
 ) {
+
+  const rows =
+    document.getElementById(
+      "productRows"
+    );
+
+
+  if (!rows) {
+
+    console.error(
+      "productRows element was not found."
+    );
+
+    return;
+  }
+
 
   const tr =
     document.createElement("tr");
@@ -466,38 +437,37 @@ function addRow(
   `;
 
 
-  /*
-   * Set initial values.
-   */
   tr.querySelector(".item").value =
     item;
+
 
   tr.querySelector(".note").value =
     note;
 
+
   tr.querySelector(".qty").value =
     qty;
+
 
   tr.querySelector(".price").value =
     price;
 
 
   /*
-   * Remove row.
+   * Remove button.
    */
-  tr.querySelector(
-    ".remove"
-  ).addEventListener(
-    "click",
-    () => {
+  tr.querySelector(".remove")
+    .addEventListener(
+      "click",
+      function() {
 
-      tr.remove();
+        tr.remove();
 
-      renumberRows();
+        renumberRows();
 
-      calculateTotal();
-    }
-  );
+        calculateTotal();
+      }
+    );
 
 
   /*
@@ -529,17 +499,34 @@ function addRow(
  * NUMBER PRODUCT ROWS
  * ==========================================
  */
+
 function renumberRows() {
+
+  const rows =
+    document.getElementById(
+      "productRows"
+    );
+
+
+  if (!rows) return;
+
 
   [
     ...rows.children
   ].forEach(
     (tr, index) => {
 
-      tr.querySelector(
-        ".row-number"
-      ).textContent =
-        index + 1;
+      const number =
+        tr.querySelector(
+          ".row-number"
+        );
+
+
+      if (number) {
+
+        number.textContent =
+          index + 1;
+      }
     }
   );
 }
@@ -550,7 +537,14 @@ function renumberRows() {
  * CALCULATE TOTAL
  * ==========================================
  */
+
 function calculateTotal() {
+
+  const rows =
+    document.getElementById(
+      "productRows"
+    );
+
 
   const currencyElement =
     document.getElementById(
@@ -558,7 +552,18 @@ function calculateTotal() {
     );
 
 
-  if (!currencyElement) {
+  const grandTotalElement =
+    document.getElementById(
+      "grandTotal"
+    );
+
+
+  if (
+    !rows ||
+    !currencyElement ||
+    !grandTotalElement
+  ) {
+
     return;
   }
 
@@ -584,19 +589,33 @@ function calculateTotal() {
     ...rows.children
   ].forEach(tr => {
 
+    const qtyElement =
+      tr.querySelector(
+        ".qty"
+      );
+
+
+    const priceElement =
+      tr.querySelector(
+        ".price"
+      );
+
+
+    const totalElement =
+      tr.querySelector(
+        ".row-total"
+      );
+
+
     const qty =
       parseFloat(
-        tr.querySelector(
-          ".qty"
-        ).value
+        qtyElement.value
       ) || 0;
 
 
     const price =
       parseFloat(
-        tr.querySelector(
-          ".price"
-        ).value
+        priceElement.value
       ) || 0;
 
 
@@ -604,9 +623,7 @@ function calculateTotal() {
       qty * price;
 
 
-    tr.querySelector(
-      ".row-total"
-    ).textContent =
+    totalElement.textContent =
       formatter.format(total);
 
 
@@ -615,33 +632,89 @@ function calculateTotal() {
   });
 
 
-  const totalElement =
-    document.getElementById(
-      "grandTotal"
+  grandTotalElement.textContent =
+    formatter.format(
+      grandTotal
     );
-
-
-  if (totalElement) {
-
-    totalElement.textContent =
-      formatter.format(
-        grandTotal
-      );
-  }
 }
 
 
 /*
  * ==========================================
- * INITIALIZE QUOTATION
+ * SET TODAY'S DATE
  * ==========================================
  */
+
+function setQuoteDate() {
+
+  const quoteDate =
+    document.getElementById(
+      "quoteDate"
+    );
+
+
+  if (!quoteDate) return;
+
+
+  const today =
+    new Date();
+
+
+  const year =
+    today.getFullYear();
+
+
+  const month =
+    String(
+      today.getMonth() + 1
+    ).padStart(2, "0");
+
+
+  const day =
+    String(
+      today.getDate()
+    ).padStart(2, "0");
+
+
+  quoteDate.value =
+    `${year}-${month}-${day}`;
+}
+
+
+/*
+ * ==========================================
+ * INITIALIZE PAGE
+ * ==========================================
+ */
+
 document.addEventListener(
   "DOMContentLoaded",
   function() {
 
+    console.log(
+      "BigA quotation system loaded."
+    );
+
+
     /*
-     * Load customers from Google Sheet.
+     * Set quotation date.
+     */
+    setQuoteDate();
+
+
+    /*
+     * Add the first product.
+     */
+    addRow(
+      "Shower Gel",
+      "",
+      10000,
+      0.15
+    );
+
+
+    /*
+     * Load customers.
      */
     loadCustomers();
 
@@ -671,7 +744,7 @@ document.addEventListener(
 
 
     /*
-     * Currency changes.
+     * Currency.
      */
     const currency =
       document.getElementById(
@@ -687,18 +760,5 @@ document.addEventListener(
       );
     }
   }
-);
-
-
-/*
- * ==========================================
- * STARTING PRODUCT
- * ==========================================
- */
-addRow(
-  "Shower Gel",
-  "",
-  10000,
-  0.15
 );
 ```
