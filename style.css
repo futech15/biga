@@ -236,3 +236,22 @@ footer {
   object-fit: contain !important;
   margin: 0 0 8px 0 !important;
 }
+
+.editable-term input {
+  width: 90px;
+  display: inline-block;
+  padding: 2px 4px;
+  border: 1px solid #ccc;
+  font-size: 12px;
+  background: white;
+}
+
+@media print {
+  .editable-term input {
+    border: none;
+    width: 90px;
+    padding: 0;
+    background: transparent;
+    appearance: none;
+  }
+}
