@@ -1,38 +1,33 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>BigA Group | Quotation System</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
 
-  <!-- TOP TOOLBAR -->
   <div class="toolbar">
     <h2>BigA Group | Quotation System</h2>
 
     <div>
-      <button type="button" onclick="addRow()">
+      <button type="button" id="addProductBtn">
         + Add Product
       </button>
 
-      <button type="button" onclick="window.print()">
+      <button type="button" id="printBtn">
         Print / Save PDF
       </button>
     </div>
   </div>
 
 
-  <!-- QUOTATION -->
   <main class="quote">
 
-    <!-- COMPANY HEADER -->
     <header>
 
       <div class="company">
@@ -55,29 +50,23 @@
     </header>
 
 
-    <!-- DOCUMENT TITLE -->
     <div class="document-title">
       <h2>Quotation</h2>
     </div>
 
 
-    <!-- QUOTATION DETAILS -->
     <section class="details">
 
       <div>
 
-        <label for="customerName">
-          Customer Name
-        </label>
+        <label for="customerName">Customer</label>
 
-       <select id="customerName">
-  <option value="">Loading customers...</option>
-</select>
+        <select id="customerName">
+          <option value="">Loading customers...</option>
+        </select>
 
 
-        <label for="customerCompany">
-          Company
-        </label>
+        <label for="customerCompany">Company</label>
 
         <input
           type="text"
@@ -86,9 +75,7 @@
         >
 
 
-        <label for="customerEmail">
-          Email
-        </label>
+        <label for="customerEmail">Email</label>
 
         <input
           type="email"
@@ -97,9 +84,7 @@
         >
 
 
-        <label for="customerPhone">
-          Phone
-        </label>
+        <label for="customerPhone">Phone</label>
 
         <input
           type="text"
@@ -112,20 +97,17 @@
 
       <div>
 
-        <label for="quoteNumber">
-          Quote #
-        </label>
+        <label for="quoteNumber">Quote #</label>
 
         <input
           type="text"
           id="quoteNumber"
-          placeholder="Quote number"
+          readonly
+          placeholder="Generating..."
         >
 
 
-        <label for="quoteDate">
-          Quote Date
-        </label>
+        <label for="quoteDate">Quote Date</label>
 
         <input
           type="date"
@@ -133,11 +115,9 @@
         >
 
 
-        <label for="currency">
-          Currency
-        </label>
+        <label for="currency">Currency</label>
 
-        <select id="currency" onchange="calculateTotal()">
+        <select id="currency">
           <option value="USD">USD ($)</option>
           <option value="EUR">EUR (€)</option>
           <option value="GBP">GBP (£)</option>
@@ -145,9 +125,7 @@
         </select>
 
 
-        <label for="validUntil">
-          Valid Until
-        </label>
+        <label for="validUntil">Valid Until</label>
 
         <input
           type="date"
@@ -159,7 +137,6 @@
     </section>
 
 
-    <!-- PRODUCTS -->
     <section>
 
       <table>
@@ -176,27 +153,22 @@
           </tr>
         </thead>
 
-        <tbody id="productRows">
-        </tbody>
+        <tbody id="productRows"></tbody>
 
       </table>
 
     </section>
 
 
-    <!-- TOTAL -->
     <div class="total-box">
 
       <strong>Grand Total:</strong>
 
-      <span id="grandTotal">
-        $0.00
-      </span>
+      <span id="grandTotal">$0.00</span>
 
     </div>
 
 
-    <!-- TERMS -->
     <section class="terms">
 
       <h3>Terms & Conditions</h3>
@@ -222,7 +194,6 @@
     </section>
 
 
-    <!-- FOOTER -->
     <footer>
 
       <span>BigA Group</span>
@@ -234,9 +205,7 @@
   </main>
 
 
-  <!-- JAVASCRIPT -->
-  <script src="script.js"></script>
+  <script src="./script.js?v=20260930"></script>
 
 </body>
 </html>
-```
