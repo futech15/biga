@@ -228,8 +228,11 @@ footer {
   }
 }
 .company-logo {
-  width: 180px;
-  height: auto;
-  display: block;
-  margin-bottom: 10px;
+  display: block !important;
+  width: 110px !important;
+  max-width: 110px !important;
+  height: auto !important;
+  max-height: 60px !important;
+  object-fit: contain !important;
+  margin: 0 0 8px 0 !important;
 }
