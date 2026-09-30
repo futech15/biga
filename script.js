@@ -1,54 +1,43 @@
-```javascript
-/*
- * ==========================================
- * BIGA GROUP QUOTATION SYSTEM
- * ==========================================
- */
+"use strict";
 
+/*
+  Google Apps Script Web App
+*/
 const GOOGLE_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbz1_mTRognoC0yTc3ZzkYB9r-YiDq6qkSg1QoUou5BJJcbXnuZKoyabneY11pEPhIkcUA/exec";
 
 
-/*
- * ==========================================
- * GOOGLE APPS SCRIPT JSONP
- * ==========================================
- */
+/* =========================================================
+   GOOGLE APPS SCRIPT JSONP
+   ========================================================= */
 
 function googleJSONP(action) {
 
-  return new Promise((resolve, reject) => {
+  return new Promise(function(resolve, reject) {
 
     const callbackName =
-      "googleCallback_" +
+      "bigA_callback_" +
       Date.now() +
       "_" +
       Math.floor(Math.random() * 100000);
 
-
-    const script =
-      document.createElement("script");
-
+    const script = document.createElement("script");
 
     let finished = false;
 
+    const timeout = setTimeout(function() {
 
-    const timeout =
-      setTimeout(() => {
+      if (finished) return;
 
-        if (finished) return;
+      finished = true;
 
-        finished = true;
+      cleanup();
 
-        cleanup();
+      reject(
+        new Error("Google Apps Script request timed out.")
+      );
 
-        reject(
-          new Error(
-            "Google Apps Script request timed out."
-          )
-        );
-
-      }, 15000);
+    }, 15000);
 
 
     function cleanup() {
@@ -57,7 +46,7 @@ function googleJSONP(action) {
 
       try {
         delete window[callbackName];
-      } catch (e) {
+      } catch (error) {
         window[callbackName] = undefined;
       }
 
@@ -67,34 +56,30 @@ function googleJSONP(action) {
     }
 
 
-    window[callbackName] =
-      function(data) {
+    window[callbackName] = function(data) {
 
-        if (finished) return;
+      if (finished) return;
 
-        finished = true;
+      finished = true;
 
-        cleanup();
+      cleanup();
 
-        resolve(data);
-      };
+      resolve(data);
+    };
 
 
-    script.onerror =
-      function() {
+    script.onerror = function() {
 
-        if (finished) return;
+      if (finished) return;
 
-        finished = true;
+      finished = true;
 
-        cleanup();
+      cleanup();
 
-        reject(
-          new Error(
-            "Could not connect to Google Apps Script."
-          )
-        );
-      };
+      reject(
+        new Error("Could not connect to Google Apps Script.")
+      );
+    };
 
 
     script.src =
@@ -103,37 +88,33 @@ function googleJSONP(action) {
       encodeURIComponent(action) +
       "&callback=" +
       encodeURIComponent(callbackName) +
-      "&t=" +
+      "&_=" +
       Date.now();
 
 
-    document.body.appendChild(script);
+    document.head.appendChild(script);
+
   });
+
 }
 
 
-/*
- * ==========================================
- * LOAD CUSTOMERS
- * ==========================================
- */
+/* =========================================================
+   CUSTOMER LIST
+   ========================================================= */
 
 async function loadCustomers() {
 
-  const select =
+  const customerSelect =
     document.getElementById("customerName");
 
-
-  if (!select) {
-    console.error(
-      "customerName element was not found."
-    );
-
+  if (!customerSelect) {
+    console.error("customerName not found.");
     return;
   }
 
 
-  select.innerHTML =
+  customerSelect.innerHTML =
     '<option value="">Loading customers...</option>';
 
 
@@ -142,41 +123,30 @@ async function loadCustomers() {
     const customers =
       await googleJSONP("customers");
 
-
-    console.log(
-      "Customers received:",
-      customers
-    );
+    console.log("Customers from Google:", customers);
 
 
     if (!Array.isArray(customers)) {
-
-      throw new Error(
-        "Customer data is not an array."
-      );
+      throw new Error("Invalid customer response.");
     }
 
 
-    select.innerHTML =
+    customerSelect.innerHTML =
       '<option value="">Select customer</option>';
 
 
-    customers.forEach(customer => {
+    customers.forEach(function(customer) {
 
       const option =
         document.createElement("option");
 
 
       option.value =
-        customer.id || "";
+        customer.id || customer.company || "";
 
 
       option.textContent =
         customer.company || "Unnamed customer";
-
-
-      option.dataset.address =
-        customer.address || "";
 
 
       option.dataset.email =
@@ -187,183 +157,149 @@ async function loadCustomers() {
         customer.phone || "";
 
 
-      select.appendChild(option);
+      option.dataset.address =
+        customer.address || "";
+
+
+      customerSelect.appendChild(option);
+
     });
 
 
-    /*
-     * If there are no customers,
-     * show a useful message.
-     */
     if (customers.length === 0) {
 
-      select.innerHTML =
+      customerSelect.innerHTML =
         '<option value="">No customers found</option>';
-    }
 
+    }
 
   } catch (error) {
 
     console.error(
-      "Customer loading failed:",
+      "Customer loading error:",
       error
     );
 
 
-    select.innerHTML =
-      '<option value="">Customer list unavailable</option>';
+    customerSelect.innerHTML =
+      '<option value="">Unable to load customers</option>';
+
   }
+
 }
 
 
-/*
- * ==========================================
- * CUSTOMER SELECTED
- * ==========================================
- */
+/* =========================================================
+   CUSTOMER SELECTED
+   ========================================================= */
 
 function customerSelected() {
 
   const select =
-    document.getElementById(
-      "customerName"
-    );
+    document.getElementById("customerName");
+
+  const company =
+    document.getElementById("customerCompany");
+
+  const email =
+    document.getElementById("customerEmail");
+
+  const phone =
+    document.getElementById("customerPhone");
 
 
   if (!select) return;
 
 
   const option =
-    select.options[
-      select.selectedIndex
-    ];
+    select.options[select.selectedIndex];
 
 
-  const company =
-    document.getElementById(
-      "customerCompany"
-    );
+  if (!option || !option.value) {
 
-
-  const email =
-    document.getElementById(
-      "customerEmail"
-    );
-
-
-  const phone =
-    document.getElementById(
-      "customerPhone"
-    );
-
-
-  if (
-    !option ||
-    !option.value
-  ) {
-
-    if (company) company.value = "";
-
-    if (email) email.value = "";
-
-    if (phone) phone.value = "";
+    company.value = "";
+    email.value = "";
+    phone.value = "";
 
     return;
   }
 
 
-  if (company) {
-
-    company.value =
-      option.textContent;
-  }
+  company.value =
+    option.textContent || "";
 
 
-  if (email) {
-
-    email.value =
-      option.dataset.email || "";
-  }
+  email.value =
+    option.dataset.email || "";
 
 
-  if (phone) {
+  phone.value =
+    option.dataset.phone || "";
 
-    phone.value =
-      option.dataset.phone || "";
-  }
 }
 
 
-/*
- * ==========================================
- * GENERATE QUOTE NUMBER
- * ==========================================
- */
+/* =========================================================
+   QUOTE NUMBER
+   ========================================================= */
 
 async function loadQuoteNumber() {
 
   const quoteNumber =
-    document.getElementById(
-      "quoteNumber"
-    );
+    document.getElementById("quoteNumber");
 
 
   if (!quoteNumber) return;
 
 
-  quoteNumber.value =
-    "Generating...";
+  quoteNumber.value = "Generating...";
 
 
   try {
 
     const result =
-      await googleJSONP(
-        "quoteNumber"
-      );
+      await googleJSONP("quoteNumber");
 
 
     console.log(
-      "Quote number received:",
+      "Quote number:",
       result
     );
 
 
     if (
-      result &&
-      result.quoteNumber
+      !result ||
+      !result.quoteNumber
     ) {
-
-      quoteNumber.value =
-        result.quoteNumber;
-
-    } else {
-
       throw new Error(
         "No quote number returned."
       );
     }
 
 
+    quoteNumber.value =
+      result.quoteNumber;
+
+
   } catch (error) {
 
     console.error(
-      "Quote number failed:",
+      "Quote number error:",
       error
     );
 
 
     quoteNumber.value =
-      "Not available";
+      "Error";
+
   }
+
 }
 
 
-/*
- * ==========================================
- * ADD PRODUCT ROW
- * ==========================================
- */
+/* =========================================================
+   ADD PRODUCT ROW
+   ========================================================= */
 
 function addRow(
   item = "",
@@ -373,15 +309,13 @@ function addRow(
 ) {
 
   const rows =
-    document.getElementById(
-      "productRows"
-    );
+    document.getElementById("productRows");
 
 
   if (!rows) {
 
     console.error(
-      "productRows element was not found."
+      "productRows not found."
     );
 
     return;
@@ -393,18 +327,23 @@ function addRow(
 
 
   tr.innerHTML = `
+
     <td class="row-number"></td>
 
     <td>
       <input
         class="item"
-        placeholder="Product name">
+        type="text"
+        placeholder="Product name"
+      >
     </td>
 
     <td>
       <input
         class="note"
-        placeholder="Description">
+        type="text"
+        placeholder="Description"
+      >
     </td>
 
     <td>
@@ -412,7 +351,8 @@ function addRow(
         class="qty"
         type="number"
         min="0"
-        step="1">
+        step="1"
+      >
     </td>
 
     <td>
@@ -420,7 +360,8 @@ function addRow(
         class="price"
         type="number"
         min="0"
-        step="0.01">
+        step="0.01"
+      >
     </td>
 
     <td class="row-total">
@@ -428,12 +369,16 @@ function addRow(
     </td>
 
     <td class="no-print">
+
       <button
         type="button"
-        class="remove">
+        class="remove"
+      >
         Remove
       </button>
+
     </td>
+
   `;
 
 
@@ -453,9 +398,6 @@ function addRow(
     price;
 
 
-  /*
-   * Remove button.
-   */
   tr.querySelector(".remove")
     .addEventListener(
       "click",
@@ -466,23 +408,23 @@ function addRow(
         renumberRows();
 
         calculateTotal();
+
       }
     );
 
 
-  /*
-   * Recalculate when quantity
-   * or price changes.
-   */
-  tr.querySelectorAll(
-    ".qty, .price"
-  ).forEach(input => {
-
-    input.addEventListener(
+  tr.querySelector(".qty")
+    .addEventListener(
       "input",
       calculateTotal
     );
-  });
+
+
+  tr.querySelector(".price")
+    .addEventListener(
+      "input",
+      calculateTotal
+    );
 
 
   rows.appendChild(tr);
@@ -491,85 +433,67 @@ function addRow(
   renumberRows();
 
   calculateTotal();
+
 }
 
 
-/*
- * ==========================================
- * NUMBER PRODUCT ROWS
- * ==========================================
- */
+/* =========================================================
+   NUMBER PRODUCT ROWS
+   ========================================================= */
 
 function renumberRows() {
 
   const rows =
-    document.getElementById(
-      "productRows"
-    );
+    document.getElementById("productRows");
 
 
   if (!rows) return;
 
 
-  [
-    ...rows.children
-  ].forEach(
-    (tr, index) => {
+  Array.from(rows.children)
+    .forEach(function(tr, index) {
 
       const number =
-        tr.querySelector(
-          ".row-number"
-        );
+        tr.querySelector(".row-number");
 
 
       if (number) {
 
         number.textContent =
           index + 1;
+
       }
-    }
-  );
+
+    });
+
 }
 
 
-/*
- * ==========================================
- * CALCULATE TOTAL
- * ==========================================
- */
+/* =========================================================
+   CALCULATE TOTAL
+   ========================================================= */
 
 function calculateTotal() {
 
   const rows =
-    document.getElementById(
-      "productRows"
-    );
+    document.getElementById("productRows");
 
 
-  const currencyElement =
-    document.getElementById(
-      "currency"
-    );
+  const currency =
+    document.getElementById("currency");
 
 
-  const grandTotalElement =
-    document.getElementById(
-      "grandTotal"
-    );
+  const grandTotal =
+    document.getElementById("grandTotal");
 
 
   if (
     !rows ||
-    !currencyElement ||
-    !grandTotalElement
+    !currency ||
+    !grandTotal
   ) {
-
     return;
   }
-
-
-  const currency =
-    currencyElement.value;
 
 
   const formatter =
@@ -577,84 +501,57 @@ function calculateTotal() {
       "en-US",
       {
         style: "currency",
-        currency: currency
+        currency: currency.value
       }
     );
 
 
-  let grandTotal = 0;
+  let totalAmount = 0;
 
 
-  [
-    ...rows.children
-  ].forEach(tr => {
+  Array.from(rows.children)
+    .forEach(function(tr) {
 
-    const qtyElement =
-      tr.querySelector(
-        ".qty"
-      );
-
-
-    const priceElement =
-      tr.querySelector(
-        ".price"
-      );
+      const qty =
+        parseFloat(
+          tr.querySelector(".qty").value
+        ) || 0;
 
 
-    const totalElement =
-      tr.querySelector(
-        ".row-total"
-      );
+      const price =
+        parseFloat(
+          tr.querySelector(".price").value
+        ) || 0;
 
 
-    const qty =
-      parseFloat(
-        qtyElement.value
-      ) || 0;
+      const total =
+        qty * price;
 
 
-    const price =
-      parseFloat(
-        priceElement.value
-      ) || 0;
+      const rowTotal =
+        tr.querySelector(".row-total");
 
 
-    const total =
-      qty * price;
+      rowTotal.textContent =
+        formatter.format(total);
 
 
-    totalElement.textContent =
-      formatter.format(total);
+      totalAmount += total;
+
+    });
 
 
-    grandTotal +=
-      total;
-  });
+  grandTotal.textContent =
+    formatter.format(totalAmount);
 
-
-  grandTotalElement.textContent =
-    formatter.format(
-      grandTotal
-    );
 }
 
 
-/*
- * ==========================================
- * SET TODAY'S DATE
- * ==========================================
- */
+/* =========================================================
+   DATES
+   ========================================================= */
 
-function setQuoteDate() {
-
-  const quoteDate =
-    document.getElementById(
-      "quoteDate"
-    );
-
-
-  if (!quoteDate) return;
-
+function setDates() {
 
   const today =
     new Date();
@@ -676,35 +573,85 @@ function setQuoteDate() {
     ).padStart(2, "0");
 
 
-  quoteDate.value =
+  const todayString =
     `${year}-${month}-${day}`;
+
+
+  const quoteDate =
+    document.getElementById(
+      "quoteDate"
+    );
+
+
+  const validUntil =
+    document.getElementById(
+      "validUntil"
+    );
+
+
+  if (quoteDate) {
+
+    quoteDate.value =
+      todayString;
+
+  }
+
+
+  if (validUntil) {
+
+    const future =
+      new Date();
+
+
+    future.setDate(
+      future.getDate() + 30
+    );
+
+
+    const futureYear =
+      future.getFullYear();
+
+
+    const futureMonth =
+      String(
+        future.getMonth() + 1
+      ).padStart(2, "0");
+
+
+    const futureDay =
+      String(
+        future.getDate()
+      ).padStart(2, "0");
+
+
+    validUntil.value =
+      `${futureYear}-${futureMonth}-${futureDay}`;
+
+  }
+
 }
 
 
-/*
- * ==========================================
- * INITIALIZE PAGE
- * ==========================================
- */
+/* =========================================================
+   START APPLICATION
+   ========================================================= */
 
 document.addEventListener(
   "DOMContentLoaded",
   function() {
 
     console.log(
-      "BigA quotation system loaded."
+      "BigA Group quotation system started."
     );
 
 
-    /*
-     * Set quotation date.
-     */
-    setQuoteDate();
+    setDates();
 
 
     /*
-     * Add the first product.
-     */
+      THIS ROW MUST APPEAR
+      EVEN IF GOOGLE IS DOWN.
+    */
     addRow(
       "Shower Gel",
       "",
@@ -713,39 +660,46 @@ document.addEventListener(
     );
 
 
-    /*
-     * Load customers.
-     */
-    loadCustomers();
-
-
-    /*
-     * Generate quote number.
-     */
-    loadQuoteNumber();
-
-
-    /*
-     * Customer dropdown.
-     */
-    const customerSelect =
+    const addProductButton =
       document.getElementById(
-        "customerName"
+        "addProductBtn"
       );
 
 
-    if (customerSelect) {
+    if (addProductButton) {
 
-      customerSelect.addEventListener(
-        "change",
-        customerSelected
+      addProductButton.addEventListener(
+        "click",
+        function() {
+
+          addRow();
+
+        }
       );
+
     }
 
 
-    /*
-     * Currency.
-     */
+    const printButton =
+      document.getElementById(
+        "printBtn"
+      );
+
+
+    if (printButton) {
+
+      printButton.addEventListener(
+        "click",
+        function() {
+
+          window.print();
+
+        }
+      );
+
+    }
+
+
     const currency =
       document.getElementById(
         "currency"
@@ -758,7 +712,35 @@ document.addEventListener(
         "change",
         calculateTotal
       );
+
     }
+
+
+    const customerSelect =
+      document.getElementById(
+        "customerName"
+      );
+
+
+    if (customerSelect) {
+
+      customerSelect.addEventListener(
+        "change",
+        customerSelected
+      );
+
+    }
+
+
+    /*
+      Google functions are separate.
+      They cannot prevent the product
+      table from appearing.
+    */
+
+    loadCustomers();
+
+    loadQuoteNumber();
+
   }
 );
-```
