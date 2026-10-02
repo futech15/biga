@@ -11,7 +11,7 @@ const GOOGLE_SCRIPT_URL =
    GOOGLE APPS SCRIPT JSONP
    ========================================================= */
 
-function googleJSONP(action) {
+function googleJSONP(action, params = {}) {
 
   return new Promise(function(resolve, reject) {
 
@@ -21,23 +21,30 @@ function googleJSONP(action) {
       "_" +
       Math.floor(Math.random() * 100000);
 
-    const script = document.createElement("script");
+
+    const script =
+      document.createElement("script");
+
 
     let finished = false;
 
-    const timeout = setTimeout(function() {
 
-      if (finished) return;
+    const timeout =
+      setTimeout(function() {
 
-      finished = true;
+        if (finished) return;
 
-      cleanup();
+        finished = true;
 
-      reject(
-        new Error("Google Apps Script request timed out.")
-      );
+        cleanup();
 
-    }, 15000);
+        reject(
+          new Error(
+            "Google Apps Script request timed out."
+          )
+        );
+
+      }, 30000);
 
 
     function cleanup() {
@@ -45,59 +52,93 @@ function googleJSONP(action) {
       clearTimeout(timeout);
 
       try {
+
         delete window[callbackName];
+
       } catch (error) {
-        window[callbackName] = undefined;
+
+        window[callbackName] =
+          undefined;
+
       }
 
+
       if (script.parentNode) {
-        script.parentNode.removeChild(script);
+
+        script.parentNode
+          .removeChild(script);
+
       }
+
     }
 
 
-    window[callbackName] = function(data) {
+    window[callbackName] =
+      function(data) {
 
-      if (finished) return;
+        if (finished) return;
 
-      finished = true;
+        finished = true;
 
-      cleanup();
+        cleanup();
 
-      resolve(data);
-    };
+        resolve(data);
 
-
-    script.onerror = function() {
-
-      if (finished) return;
-
-      finished = true;
-
-      cleanup();
-
-      reject(
-        new Error("Could not connect to Google Apps Script.")
-      );
-    };
+      };
 
 
-    script.src =
+    script.onerror =
+      function() {
+
+        if (finished) return;
+
+        finished = true;
+
+        cleanup();
+
+        reject(
+          new Error(
+            "Could not connect to Google Apps Script."
+          )
+        );
+
+      };
+
+
+    let url =
       GOOGLE_SCRIPT_URL +
       "?action=" +
       encodeURIComponent(action) +
       "&callback=" +
-      encodeURIComponent(callbackName) +
+      encodeURIComponent(callbackName);
+
+
+    Object.keys(params)
+      .forEach(function(key) {
+
+        url +=
+          "&" +
+          encodeURIComponent(key) +
+          "=" +
+          encodeURIComponent(
+            params[key]
+          );
+
+      });
+
+
+    url +=
       "&_=" +
       Date.now();
 
+
+    script.src = url;
 
     document.head.appendChild(script);
 
   });
 
 }
-
 
 /* =========================================================
    CUSTOMER LIST
