@@ -254,3 +254,10 @@ footer {
   font-size: 12px;
   background: white;
 }
+
+.details textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  resize: vertical;
+}
