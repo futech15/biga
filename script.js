@@ -280,68 +280,36 @@ CUSTOMER SELECTED
 =========================================================
 */
 
+
 function customerSelected() {
 
   const select =
-    document.getElementById(
-      "customerName"
-    );
+    document.getElementById("customerName");
 
+  const address =
+    document.getElementById("customerAddress");
 
-  const company =
-    document.getElementById(
-      "customerCompany"
-    );
-
-
-  const email =
-    document.getElementById(
-      "customerEmail"
-    );
-
-
-  const phone =
-    document.getElementById(
-      "customerPhone"
-    );
-
+  const contact =
+    document.getElementById("customerContact");
 
   if (!select) return;
 
-
   const option =
-    select.options[
-      select.selectedIndex
-    ];
+    select.options[select.selectedIndex];
 
+  if (!option || !option.value) {
 
-  if (
-    !option ||
-    !option.value
-  ) {
-
-    company.value = "";
-
-    email.value = "";
-
-    phone.value = "";
+    address.value = "";
+    contact.value = "";
 
     return;
-
   }
 
+  address.value =
+    option.dataset.address || "";
 
-  company.value =
-    option.textContent ||
-    "";
-
-
-  email.value =
+  contact.value =
     option.dataset.email ||
-    "";
-
-
-  phone.value =
     option.dataset.phone ||
     "";
 
@@ -629,101 +597,51 @@ CALCULATE TOTAL
 =========================================================
 */
 
+
 function calculateTotal() {
 
   const rows =
-    document.getElementById(
-      "productRows"
-    );
-
-
-  const currency =
-    document.getElementById(
-      "currency"
-    );
-
+    document.getElementById("productRows");
 
   const grandTotal =
-    document.getElementById(
-      "grandTotal"
-    );
+    document.getElementById("grandTotal");
 
-
-  if (
-    !rows ||
-    !currency ||
-    !grandTotal
-  ) {
-
-    return;
-
-  }
-
+  if (!rows || !grandTotal) return;
 
   const formatter =
-    new Intl.NumberFormat(
-      "en-US",
-      {
-        style: "currency",
-        currency:
-          currency.value
-      }
-    );
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD"
+    });
 
+  let totalAmount = 0;
 
-  let totalAmount =
-    0;
+  Array.from(rows.children).forEach(function(tr) {
 
+    const qty =
+      parseFloat(
+        tr.querySelector(".qty").value
+      ) || 0;
 
-  Array.from(
-    rows.children
-  )
-    .forEach(
-      function(tr) {
+    const price =
+      parseFloat(
+        tr.querySelector(".price").value
+      ) || 0;
 
-        const qty =
-          parseFloat(
-            tr.querySelector(
-              ".qty"
-            ).value
-          ) || 0;
+    const total = qty * price;
 
+    const rowTotal =
+      tr.querySelector(".row-total");
 
-        const price =
-          parseFloat(
-            tr.querySelector(
-              ".price"
-            ).value
-          ) || 0;
+    rowTotal.textContent =
+      formatter.format(total);
 
+    totalAmount += total;
 
-        const total =
-          qty * price;
-
-
-        const rowTotal =
-          tr.querySelector(
-            ".row-total"
-          );
-
-
-        rowTotal.textContent =
-          formatter.format(
-            total
-          );
-
-
-        totalAmount +=
-          total;
-
-      }
-    );
-
+  });
 
   grandTotal.textContent =
-    formatter.format(
-      totalAmount
-    );
+    formatter.format(totalAmount);
 
 }
 
@@ -1188,10 +1106,10 @@ async function saveQuoteToDrive() {
       Customer/company.
     */
     const customerCompany =
-      document.getElementById(
-        "customerCompany"
-      )?.value ||
-      "Customer";
+  document.getElementById(
+    "customerName"
+  )?.selectedOptions[0]?.textContent?.trim() ||
+  "Customer";
 
 
     /*
@@ -1626,19 +1544,18 @@ document.addEventListener(
       CURRENCY
     */
     const currency =
-      document.getElementById(
-        "currency"
-      );
+  document.getElementById(
+    "currency"
+  );
 
+if (currency) {
 
-    if (currency) {
+  currency.addEventListener(
+    "change",
+    calculateTotal
+  );
 
-      currency.addEventListener(
-        "change",
-        calculateTotal
-      );
-
-    }
+}
 
 
     /*
