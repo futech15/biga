@@ -226,19 +226,11 @@ async function loadCustomers() {
           "Unnamed customer";
 
 
-        option.dataset.email =
-          customer.email ||
-          "";
-
-
-        option.dataset.phone =
-          customer.phone ||
-          "";
-
-
         option.dataset.address =
-          customer.address ||
-          "";
+  customer.address || "";
+
+option.dataset.contact =
+  customer.contact || "";
 
 
         customerSelect.appendChild(
