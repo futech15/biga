@@ -56,86 +56,64 @@
     </div>
 
 
-    <section class="details">
+   
+<section class="details">
 
-      <div>
+  <div>
 
-        <label for="customerName">Customer</label>
+    <label for="customerName">Customer</label>
 
-        <select id="customerName">
-          <option value="">Loading customers...</option>
-        </select>
+    <select id="customerName">
+      <option value="">Loading customers...</option>
+    </select>
 
+    <label for="customerAddress">Address</label>
 
-        <label for="customerCompany">Company</label>
+    <textarea
+      id="customerAddress"
+      rows="2"
+      placeholder="Customer address"
+    ></textarea>
 
-        <input
-          type="text"
-          id="customerCompany"
-          placeholder="Company name"
-        >
+    <label for="customerContact">Contact</label>
 
+    <input
+      type="text"
+      id="customerContact"
+      placeholder="Email or phone number"
+    >
 
-        <label for="customerEmail">Email</label>
+  </div>
 
-        <input
-          type="email"
-          id="customerEmail"
-          placeholder="Email address"
-        >
+  <div>
 
+    <label for="quoteNumber">Quote #</label>
 
-        <label for="customerPhone">Phone</label>
+    <input
+      type="text"
+      id="quoteNumber"
+      readonly
+      placeholder="Generating..."
+    >
 
-        <input
-          type="text"
-          id="customerPhone"
-          placeholder="Phone number"
-        >
+    <label for="quoteDate">Quote Date</label>
 
-      </div>
+    <input
+      type="date"
+      id="quoteDate"
+    >
 
+    <label for="validUntil">Valid Until</label>
 
-      <div>
+    <input
+      type="date"
+      id="validUntil"
+    >
 
-        <label for="quoteNumber">Quote #</label>
+  </div>
 
-        <input
-          type="text"
-          id="quoteNumber"
-          readonly
-          placeholder="Generating..."
-        >
+</section>
 
-
-        <label for="quoteDate">Quote Date</label>
-
-        <input
-          type="date"
-          id="quoteDate"
-        >
-
-
-        <label for="currency">Currency</label>
-
-        <select id="currency">
-          <option value="USD">USD ($)</option>
-          <option value="EUR">EUR (€)</option>
-          <option value="GBP">GBP (£)</option>
-          <option value="CAD">CAD ($)</option>
-        </select>
-
-
-        <label for="validUntil">Valid Until</label>
-
-        <input
-          type="date"
-          id="validUntil"
-        >
-
-      </div>
-
-    </section>
 
 
     <section>
