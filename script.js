@@ -301,9 +301,7 @@ function customerSelected() {
     option.dataset.address || "";
 
   contact.value =
-    option.dataset.email ||
-    option.dataset.phone ||
-    "";
+  option.dataset.contact || "";
 
 }
 
