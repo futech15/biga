@@ -579,7 +579,24 @@ function renumberRows() {
 
 }
 
+function getCurrencyFormatter() {
+  const currency =
+    document.getElementById("currency")?.value || "USD";
 
+  const symbols = {
+    USD: "$",
+    IQD: "د.ع",
+    TRY: "₺"
+  };
+
+  return function(amount) {
+    return symbols[currency] + " " +
+      Number(amount).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+  };
+}
 
 /*
 =========================================================
@@ -598,11 +615,7 @@ function calculateTotal() {
 
   if (!rows || !grandTotal) return;
 
-  const formatter =
-    new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD"
-    });
+ const formatMoney = getCurrencyFormatter();
 
   let totalAmount = 0;
 
@@ -624,14 +637,14 @@ function calculateTotal() {
       tr.querySelector(".row-total");
 
     rowTotal.textContent =
-      formatter.format(total);
+      formatMoney(total);
 
     totalAmount += total;
 
   });
 
   grandTotal.textContent =
-    formatter.format(totalAmount);
+    formatMoney(totalAmount);
 
 }
 
@@ -815,10 +828,12 @@ async function createQuotePDFHTML() {
             ];
 
 
-          value =
-            selected
-              ? selected.textContent
-              : "";
+         value =
+  selected
+    ? (element.id === "currency"
+        ? selected.textContent.split(" - ")[0]
+        : selected.textContent)
+    : "";
 
         } else {
 
@@ -1440,7 +1455,18 @@ document.addEventListener(
   "DOMContentLoaded",
   function() {
 
+const currencySelect = document.getElementById("currency");
 
+if (currencySelect) {
+  currencySelect.addEventListener("change", function() {
+    document.getElementById("currencyPrint").textContent =
+      this.options[this.selectedIndex].textContent.split(" - ")[0];
+
+    calculateTotal();
+  });
+
+  currencySelect.dispatchEvent(new Event("change"));
+}
     console.log(
       "BigA Group quotation system started."
     );
@@ -1530,22 +1556,7 @@ document.addEventListener(
     }
 
 
-    /*
-      CURRENCY
-    */
-    const currency =
-  document.getElementById(
-    "currency"
-  );
-
-if (currency) {
-
-  currency.addEventListener(
-    "change",
-    calculateTotal
-  );
-
-}
+ 
 
 
     /*
