@@ -51,24 +51,22 @@
     </header>
 
 
-    <div class="document-title">
-      <h2>Quotation</h2>
-    </div>
+ 
+<div class="document-title">
+  <h2>Quotation</h2>
+</div>
 
-
-   
 <section class="details">
 
+  <!-- LEFT COLUMN: CUSTOMER INFORMATION -->
   <div>
 
     <label for="customerName">Customer</label>
-
     <select id="customerName">
       <option value="">Loading customers...</option>
     </select>
 
     <label for="customerAddress">Address</label>
-
     <textarea
       id="customerAddress"
       rows="2"
@@ -76,7 +74,6 @@
     ></textarea>
 
     <label for="customerContact">Contact</label>
-
     <input
       type="text"
       id="customerContact"
@@ -84,22 +81,11 @@
     >
 
   </div>
-  <label for="currency">Currency</label>
 
-<div class="currency-field">
-  <select id="currency">
-    <option value="USD">$ - US Dollar (USD)</option>
-    <option value="IQD">د.ع - Iraqi Dinar (IQD)</option>
-    <option value="TRY">₺ - Turkish Lira (TRY)</option>
-  </select>
-
-  <span id="currencyPrint" class="currency-print"></span>
-</div>
-
+  <!-- RIGHT COLUMN: QUOTATION INFORMATION -->
   <div>
 
     <label for="quoteNumber">Quote #</label>
-
     <input
       type="text"
       id="quoteNumber"
@@ -108,55 +94,69 @@
     >
 
     <label for="quoteDate">Quote Date</label>
-
     <input
       type="date"
       id="quoteDate"
     >
 
     <label for="validUntil">Valid Until</label>
-
     <input
       type="date"
       id="validUntil"
     >
 
+    <label for="currency">Currency</label>
+    <div class="currency-field">
+
+      <select id="currency">
+        <option value="USD">$ - US Dollar (USD)</option>
+        <option value="IQD">د.ع - Iraqi Dinar (IQD)</option>
+        <option value="TRY">₺ - Turkish Lira (TRY)</option>
+      </select>
+
+      <span
+        id="currencyPrint"
+        class="currency-print"
+      ></span>
+
+    </div>
+
   </div>
 
 </section>
 
+<!-- PRODUCTS TABLE -->
+<section>
 
+  <table>
 
-    <section>
+    <thead>
+      <tr>
+        <th style="width: 5%;">#</th>
+        <th style="width: 20%;">Product</th>
+        <th>Description</th>
+        <th style="width: 10%;">Qty</th>
+        <th style="width: 15%;">Unit Price</th>
+        <th style="width: 15%;">Total</th>
+        <th class="no-print" style="width: 10%;">Action</th>
+      </tr>
+    </thead>
 
-      <table>
+    <tbody id="productRows"></tbody>
 
-        <thead>
-          <tr>
-            <th style="width: 5%;">#</th>
-            <th style="width: 20%;">Product</th>
-            <th>Description</th>
-            <th style="width: 10%;">Qty</th>
-            <th style="width: 15%;">Unit Price</th>
-            <th style="width: 15%;">Total</th>
-            <th class="no-print" style="width: 10%;">Action</th>
-          </tr>
-        </thead>
+  </table>
 
-        <tbody id="productRows"></tbody>
+</section>
 
-      </table>
+<!-- GRAND TOTAL -->
+<div class="total-box">
 
-    </section>
+  <strong>Grand Total:</strong>
 
+  <span id="grandTotal">$0.00</span>
 
-    <div class="total-box">
+</div>
 
-      <strong>Grand Total:</strong>
-
-      <span id="grandTotal">$0.00</span>
-
-    </div>
 
 
     <section class="terms">
