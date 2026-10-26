@@ -270,3 +270,23 @@ footer {
   min-width: 85px;
   box-sizing: border-box;
 }
+/* Currency selection */
+.currency-field select {
+  width: 100%;
+}
+
+.currency-print {
+  display: none;
+}
+
+/* Print only the currency symbol */
+@media print {
+  .currency-field select {
+    display: none !important;
+  }
+
+  .currency-print {
+    display: inline !important;
+    font-size: 13px;
+  }
+}
